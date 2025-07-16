@@ -1,5 +1,6 @@
 import subprocess
 import OsTools
+import socket
 def DarkScan():
     print('DarkScan Menu')
     print('1. Scan Network')
@@ -8,18 +9,14 @@ def DarkScan():
         if command == 'exit':
             print('Saliendo del programa...')
         elif command == '1':
-            print('Name of the network to scan(press N to do it locally):')
-            network_name = input('> ')
-            if network_name.lower() == 'n':
-                print('Scanning local network...')
-                activos = ScanNetwork("192.168.1.0/24")
-                print("Active Hosts:")
-                for ip in activos:
-                    OsTools.green(ip)
-            elif network_name:
-                print(f'Scanning network: {network_name}...')
-                # Aquí iría el código para escanear la red especificada
-                ScanNetwork(network_name)
+            print('Scanning local network...')
+            activos = ScanNetwork("192.168.1.0/24")
+            print("Active Hosts:")
+            for ip in activos:
+                OsTools.green(ip)
+                hostname = obtener_hostname(ip)
+                print(f"{ip} → {hostname if hostname else 'Sin nombre'}")
+
         else:
             print('Comando no reconocido, escribe "help" para ver las herramientas disponibles.')
 
@@ -38,3 +35,9 @@ def ScanNetwork(network_name):
         print("❌ fping no está instalado.")
         return []
 
+def obtener_hostname(ip):
+    try:
+        nombre, _, _ = socket.gethostbyaddr(ip)
+        return nombre
+    except socket.herror:
+        return None
